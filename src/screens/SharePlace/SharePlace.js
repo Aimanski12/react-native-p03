@@ -13,11 +13,12 @@ import PlacesInput from '../../components/PlaceInput/PlaceInput'
 class SharePlaceScreen extends Component {
 
   constructor(props){
-    super();
+    super(props);
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent)
   }
 
   onNavigatorEvent = (event) => {
+    console.log(event)
     if(event.type === 'NavBarButtonPress'){
       if(event.id === 'sideDrawerToggle'){
         this.props.navigator.toggleDrawer({

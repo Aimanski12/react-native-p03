@@ -19,35 +19,35 @@ const startMainTabs = () => {
           label: 'Find Place',
           title: 'Find Place',
           icon: sources[0],
-          // navigatorButtons: {
-          //   leftButtons: [
-          //     {
-          //       icon: sources[2],
-          //       title: 'Menu',
-          //       id: "sideDrawerToggle"
-          //     }
-          //   ]
-          // }
+          navigatorButtons: {
+            leftButtons: [{
+              icon: sources[2],
+              title: "Menu",
+              id: "sideDrawerToggle"
+            }]
+          }
+          
         },
         {
           screen: "awesome-places.SharePlaceScreen",
           label: 'Share Place',
           title: 'Share Place',
           icon: sources[1],
-          // navigatorButtons: {
-          //   leftButtons: [{
-          //     icon: sources[2],
-          //     title: 'Menu', 
-          //     id: "sideDrawerToggle"
-          //   }]
-          // }
+          navigatorButtons: {
+            leftButtons: [{
+              icon: sources[2],
+              title: "Menu",
+              id: "sideDrawerToggle"
+            }]
+          }
         },
       ],
-      // drawer: {
-      //   left: { 
-      //     screen: "awesome-places.SideDrawer",
-      //   }
-      // }
+      drawer: {
+        left: {
+          screen: "awesome-places.SideDrawer"
+        }
+      }
+      
     })
   })
 }
