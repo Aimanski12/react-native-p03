@@ -7,12 +7,39 @@ import HeadingText from '../../components/UI/DefaultInput/DefaultInput'
 import MainText from "../../components/UI/MainText/MainText";
 import ButtonWithBackground from '../../components/UI/ButtonWithBackground/ButtonWithBackground'
 import backgroundImage from '../../assets/1.png'
-
+import validate from "../../utility/validation";
 
 class Auth extends Component {
 
   state = {
-    viewMode: Dimensions.get("window").height > 500 ? "portrait" : "landscape"
+    viewMode: Dimensions.get("window").height > 500 ? "portrait" : "landscape",
+    authMode: "login",
+    controls: {
+      email: {
+        value: "",
+        valid: false,
+        validationRules: {
+          isEmail: true
+        },
+        touched: false
+      },
+      password: {
+        value: "",
+        valid: false,
+        validationRules: {
+          minLength: 6
+        },
+        touched: false
+      },
+      confirmPassword: {
+        value: "",
+        valid: false,
+        validationRules: {
+          equalTo: "password"
+        },
+        touched: false
+      }
+    }
     // respStyles: {
     //   pwContainerDirection: "column",
     //   pwContainerJustifyContent: "flex-start",
@@ -23,15 +50,15 @@ class Auth extends Component {
 
   constructor(props) {
     super(props);
-    // Dimensions.addEventListener("change", this.updateStyles);
-  Dimensions.addEventListener("change", dims => {
-    this.setState({
-      viewMode: Dimensions.get("window").height > 500 ? "portrait" : "landscape"
+    Dimensions.addEventListener("change", this.updateStyles);
+  // Dimensions.addEventListener("change", dims => {
+  //   this.setState({
+  //     viewMode: Dimensions.get("window").height > 500 ? "portrait" : "landscape"
       // pwContainerDirection: Dimensions.get("window").height > 500 ? "column": "row",
       // pwContainerJustifyContent: Dimensions.get("window").height > 500 ? "flex-start" : "space-between",
       // pwWrapperWidth: Dimensions.get("window").height > 500 ? "100%" : "45%" 
-      })
-    })
+      // })
+    // })
   }
 
 
@@ -51,6 +78,58 @@ class Auth extends Component {
     startMainTabs()
   }
 
+
+  updateInputState = (key, value) => {
+    let connectedValue = {};
+    if (this.state.controls[key].validationRules.equalTo) {
+      const equalControl = this.state.controls[key].validationRules.equalTo;
+      const equalValue = this.state.controls[equalControl].value;
+      connectedValue = {
+        ...connectedValue,
+        equalTo: equalValue
+      };
+    }
+    if (key === "password") {
+      connectedValue = {
+        ...connectedValue,
+        equalTo: value
+      };
+    }
+    this.setState(prevState => {
+      return {
+        controls: {
+          ...prevState.controls,
+          [key]: {
+            value: value
+          },
+          ...prevState.controls,
+          confirmPassword: {
+            ...prevState.controls.confirmPassword,
+            valid:
+              key === "password"
+                ? validate(
+                    prevState.controls.confirmPassword.value,
+                    prevState.controls.confirmPassword.validationRules,
+                    connectedValue
+                  )
+                : prevState.controls.confirmPassword.valid
+          },
+          [key]: {
+            ...prevState.controls[key],
+            value: value,
+            valid: validate(
+              value,
+              prevState.controls[key].validationRules,
+              connectedValue
+            ),
+            touched: true
+          }
+        }
+      };
+    });
+  };
+
+  
 
   render() {
 
@@ -87,10 +166,13 @@ class Auth extends Component {
             title="Switch to Login"
             onPress={this.loginHandler}/> */}
         </View>
-        <View style={styles.inputItems}>
-          <DefaultInput
-            placeholder='Your Email Address'
-            style={styles.input} />
+
+  <View style={styles.inputItems}>
+    <DefaultInput
+      placeholder='Your Email Address'
+      style={styles.input} 
+      value={this.state.controls.email.value}
+      onChangeText={val => this.updateInputState("email", val)} />
 
 
 
@@ -105,7 +187,10 @@ class Auth extends Component {
             ? styles.portraitPasswordWrapper : styles.landscapePasswordWrapper }>
       <DefaultInput
         placeholder='Password'
-        style={styles.input} />
+        style={styles.input} 
+        value={this.state.controls.password.value}
+        onChangeText={val => this.updateInputState("password", val)}
+        />
     </View>
     <View
         style={
@@ -113,9 +198,11 @@ class Auth extends Component {
             ? styles.portraitPasswordWrapper : styles.landscapePasswordWrapper }>
       <DefaultInput
         placeholder='Confirm Password'
-        style={styles.input} />
-            </View>
-          </View>
+        style={styles.input} 
+        value={this.state.controls.confirmPassword.value}
+        onChangeText={val => this.updateInputState("confirmPassword", val)}/>
+    </View>
+  </View>
 
         </View>
         <View>

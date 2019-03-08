@@ -22,7 +22,8 @@ const styles = StyleSheet.create({
     borderColor: 'orange',
     padding: 5,
     paddingLeft: 15,
-    margin: 8
+    margin: 8,
+    marginBottom: 8
   }
   
 })

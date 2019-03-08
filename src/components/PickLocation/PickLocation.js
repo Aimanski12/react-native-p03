@@ -1,3 +1,6 @@
+
+
+
 import React, { Component } from "react";
 import { View, Image, Button, StyleSheet, Text } from "react-native";
 
