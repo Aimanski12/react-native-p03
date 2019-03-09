@@ -4,7 +4,7 @@
 import React, { Component } from "react";
 import { View, Image, Button, StyleSheet } from "react-native";
 
-import imagePlaceholder from "../../assets/0048.jpg";
+import imagePlaceholder from "../../assets/brazil.jpg";
 
 class PickImage extends Component {
   render() {

@@ -8,6 +8,8 @@ import MainText from "../../components/UI/MainText/MainText";
 import ButtonWithBackground from '../../components/UI/ButtonWithBackground/ButtonWithBackground'
 import backgroundImage from '../../assets/1.png'
 import validate from "../../utility/validation";
+import { tryAuth } from "../../store/actions/index";
+import { connect } from "react-redux";
 
 class Auth extends Component {
 
@@ -74,9 +76,14 @@ class Auth extends Component {
   }
 
 
-  loginHandler = () => {  
-    startMainTabs()
-  }
+  loginHandler = () => {
+    const authData = {
+      email: this.state.controls.email.value,
+      password: this.state.controls.password.value
+    };
+    this.props.onLogin(authData);
+    startMainTabs();
+  };
 
 
   updateInputState = (key, value) => {
@@ -99,20 +106,15 @@ class Auth extends Component {
       return {
         controls: {
           ...prevState.controls,
-          [key]: {
-            value: value
-          },
-          ...prevState.controls,
           confirmPassword: {
             ...prevState.controls.confirmPassword,
-            valid:
-              key === "password"
-                ? validate(
-                    prevState.controls.confirmPassword.value,
-                    prevState.controls.confirmPassword.validationRules,
-                    connectedValue
-                  )
-                : prevState.controls.confirmPassword.valid
+            valid: key === "password" ?
+              validate(
+                prevState.controls.confirmPassword.value,
+                prevState.controls.confirmPassword.validationRules,
+                connectedValue
+              ) :
+              prevState.controls.confirmPassword.valid
           },
           [key]: {
             ...prevState.controls[key],
@@ -128,7 +130,6 @@ class Auth extends Component {
       };
     });
   };
-
   
 
   render() {
@@ -172,7 +173,10 @@ class Auth extends Component {
       placeholder='Your Email Address'
       style={styles.input} 
       value={this.state.controls.email.value}
-      onChangeText={val => this.updateInputState("email", val)} />
+      onChangeText={val => this.updateInputState("email", val)} 
+      valid={this.state.controls.email.valid}
+      touched={this.state.controls.email.touched}
+      />
 
 
 
@@ -190,6 +194,8 @@ class Auth extends Component {
         style={styles.input} 
         value={this.state.controls.password.value}
         onChangeText={val => this.updateInputState("password", val)}
+        valid={this.state.controls.password.valid}
+        touched={this.state.controls.password.touched}
         />
     </View>
     <View
@@ -200,7 +206,11 @@ class Auth extends Component {
         placeholder='Confirm Password'
         style={styles.input} 
         value={this.state.controls.confirmPassword.value}
-        onChangeText={val => this.updateInputState("confirmPassword", val)}/>
+        onChangeText={val => this.updateInputState("confirmPassword", val)}
+        valid={this.state.controls.confirmPassword.valid}
+        touched={this.state.controls.confirmPassword.touched}
+        // secureTextEntry
+        />
     </View>
   </View>
 
@@ -208,7 +218,13 @@ class Auth extends Component {
         <View>
         <ButtonWithBackground
           color="#29aaf4"
-          onPress={this.loginHandler}>Submit</ButtonWithBackground>
+          onPress={this.loginHandler}
+          disabled={
+            !this.state.controls.confirmPassword.valid && this.state.authMode === "signup" ||
+            !this.state.controls.email.valid ||
+            !this.state.controls.password.valid
+          }
+          >Submit</ButtonWithBackground>
         {/* <Button 
           title={'Submit'}
           onPress={this.loginHandler} /> */}
@@ -262,5 +278,10 @@ const styles = StyleSheet.create({
   }
 })
 
+const mapDispatchToProps = dispatch => {
+  return {
+    onLogin: authData => dispatch(tryAuth(authData))
+  };
+};
 
-export default Auth
+export default connect(null, mapDispatchToProps)(Auth);

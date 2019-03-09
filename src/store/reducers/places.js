@@ -1,11 +1,11 @@
 import {
   ADD_PLACE,
   DELETE_PLACE,
-  // SELECT_PLACE,
+  TRY_AUTH,
   // DESELECT_PLACE
 } from "../actions/actionTypes";
 
-import imageSample from '../../assets/0048.jpg'
+import imageSample from '../../assets/brazil.jpg'
 
 const initialState = {
   places: []
@@ -29,6 +29,13 @@ const reducer = (state = initialState, action) => {
         places: state.places.filter(place => {
           return place.key !== action.placeKey;
         }),
+      };
+    case TRY_AUTH:
+      return {
+        ...state,
+        // places: state.places.filter(place => {
+        //   return place.key !== action.placeKey;
+        // }),
       };
     // case SELECT_PLACE:
     //   return {
