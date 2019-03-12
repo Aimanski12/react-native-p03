@@ -1,5 +1,16 @@
 import React, { Component } from 'react'
-import {View, Text, Button, StyleSheet, TextInput, ImageBackground, Dimensions} from 'react-native'
+import {View, 
+        Text, 
+        Button, 
+        StyleSheet, 
+        TextInput, 
+        ImageBackground, 
+        Dimensions,
+        KeyboardAvoidingView,
+        Keyboard,
+        TouchableWithoutFeedback
+      }
+      from 'react-native'
 
 import startMainTabs from '../MainTabs/startMainTab'
 import DefaultInput from '../../components/UI/DefaultInput/DefaultInput'
@@ -63,12 +74,21 @@ class Auth extends Component {
     // })
   }
 
+  switchAuthModeHandler = () => {
+    this.setState(prevState => {
+      return {
+        authMode: prevState.authMode === "login" ? "signup" : "login"
+      };
+    });
+  };
+
 
   componentWillUnmount() {
     Dimensions.removeEventListener("change", this.updateStyles);
   }
 
   updateStyles = (dims) => {
+    // console.log('dims', dims)
     this.setState({
       viewMode:
         dims.window.height > 500 ? "portrait" : "landscape"
@@ -135,6 +155,7 @@ class Auth extends Component {
   render() {
 
   let headingText = null;
+  let confirmPasswordControl = null;
 
     if (this.state.viewMode === "portrait") {
       headingText = (
@@ -145,11 +166,34 @@ class Auth extends Component {
     }
 
 
+    if (this.state.authMode === "signup") {
+      confirmPasswordControl = (
+        <View
+          style={
+            this.state.viewMode === "portrait"
+              ? styles.portraitPasswordWrapper
+              : styles.landscapePasswordWrapper
+          }
+        >
+          <DefaultInput
+            placeholder="Confirm Password"
+            style={styles.input}
+            value={this.state.controls.confirmPassword.value}
+            onChangeText={val => this.updateInputState("confirmPassword", val)}
+            valid={this.state.controls.confirmPassword.valid}
+            touched={this.state.controls.confirmPassword.touched}
+            secureTextEntry
+          />
+        </View>
+      );
+    }
+
     return (
       <ImageBackground 
         source={backgroundImage}
         style={styles.backgroundImage}>
-      <View style={styles.container}>
+        <KeyboardAvoidingView style={styles.container} behavior="padding">
+          {/* <View style={styles.container}> */}
 
           {headingText}
         {/* <MainText>
@@ -159,14 +203,15 @@ class Auth extends Component {
 
         
         <ButtonWithBackground
-          color="#29aaf4"
-          onPress={()=>{alert('Hello')}}>Switch to login</ButtonWithBackground>
-        <View
-          style={styles.btn}>
-          {/* <Button 
-            title="Switch to Login"
-            onPress={this.loginHandler}/> */}
-        </View>
+            color="#29aaf4"
+            onPress={this.switchAuthModeHandler}
+          >
+            Switch to {this.state.authMode === "login" ? "Sign Up" : "Login"}
+          </ButtonWithBackground>
+
+        <TouchableWithoutFeedback  onPress={Keyboard.dismiss}>
+
+        
 
   <View style={styles.inputItems}>
     <DefaultInput
@@ -176,6 +221,9 @@ class Auth extends Component {
       onChangeText={val => this.updateInputState("email", val)} 
       valid={this.state.controls.email.valid}
       touched={this.state.controls.email.touched}
+      autoCapitalize="none"
+      autoCorrect={false}
+      keyboardType="email-address"
       />
 
 
@@ -183,11 +231,13 @@ class Auth extends Component {
           {/* <View style={styles.passwordContainer}> */}
     <View
       style={
-        this.state.viewMode === "portrait"
+        this.state.viewMode === "portrait" ||
+          this.state.authMode === "login"
           ? styles.portraitPasswordContainer : styles.landscapePasswordContainer }> 
     <View
         style={
-          this.state.viewMode === "portrait"
+          this.state.viewMode === "portrait" ||
+          this.state.authMode === "login"
             ? styles.portraitPasswordWrapper : styles.landscapePasswordWrapper }>
       <DefaultInput
         placeholder='Password'
@@ -196,9 +246,11 @@ class Auth extends Component {
         onChangeText={val => this.updateInputState("password", val)}
         valid={this.state.controls.password.valid}
         touched={this.state.controls.password.touched}
+        secureTextEntry
         />
     </View>
-    <View
+    {confirmPasswordControl}
+    {/* <View
         style={
           this.state.viewMode === "portrait"
             ? styles.portraitPasswordWrapper : styles.landscapePasswordWrapper }>
@@ -210,12 +262,12 @@ class Auth extends Component {
         valid={this.state.controls.confirmPassword.valid}
         touched={this.state.controls.confirmPassword.touched}
         // secureTextEntry
-        />
-    </View>
+        /> 
+        </View> */}
   </View>
 
         </View>
-        <View>
+        </TouchableWithoutFeedback>
         <ButtonWithBackground
           color="#29aaf4"
           onPress={this.loginHandler}
@@ -228,8 +280,9 @@ class Auth extends Component {
         {/* <Button 
           title={'Submit'}
           onPress={this.loginHandler} /> */}
-        </View>
-      </View>      
+      {/* </View>       */}
+
+      </KeyboardAvoidingView>
       </ImageBackground>
     )
   }

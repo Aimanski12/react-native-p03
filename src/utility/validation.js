@@ -1,5 +1,3 @@
-
-
 const validate = (val, rules, connectedValue) => {
   let isValid = true;
   for (let rule in rules) {

@@ -1,13 +1,15 @@
-
-
 export {
   addPlace,
-  deletePlace
+  deletePlace,
+  getPlaces
 }
 from "./places";
-
-
 export {
   tryAuth
 }
-from './auth';
+from "./auth";
+export {
+  uiStartLoading,
+  uiStopLoading
+}
+from "./ui";

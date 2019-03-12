@@ -1,11 +1,7 @@
 import {
-  ADD_PLACE,
-  DELETE_PLACE,
-  TRY_AUTH,
-  // DESELECT_PLACE
+  SET_PLACES,
+  REMOVE_PLACE
 } from "../actions/actionTypes";
-
-import imageSample from '../../assets/brazil.jpg'
 
 const initialState = {
   places: []
@@ -13,42 +9,18 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case ADD_PLACE:
+    case SET_PLACES:
       return {
         ...state,
-        places: state.places.concat({
-          key: Math.random(),
-          name: action.placeName,
-          image: imageSample
-              // "../../assets/0048.jpg"
-        })
+        places: action.places
       };
-    case DELETE_PLACE:
+    case REMOVE_PLACE:
       return {
         ...state,
         places: state.places.filter(place => {
-          return place.key !== action.placeKey;
-        }),
+          return place.key !== action.key;
+        })
       };
-    case TRY_AUTH:
-      return {
-        ...state,
-        // places: state.places.filter(place => {
-        //   return place.key !== action.placeKey;
-        // }),
-      };
-    // case SELECT_PLACE:
-    //   return {
-    //     ...state,
-    //     selectedPlace: state.places.find(place => {
-    //       return place.key === action.placeKey;
-    //     })
-    //   };
-    // case DESELECT_PLACE:
-    //   return {
-    //     ...state,
-    //     selectedPlace: null
-    //   };
     default:
       return state;
   }
