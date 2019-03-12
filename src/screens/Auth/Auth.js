@@ -8,11 +8,12 @@ import {View,
         Dimensions,
         KeyboardAvoidingView,
         Keyboard,
-        TouchableWithoutFeedback
+        TouchableWithoutFeedback,
+        ActivityIndicator
       }
       from 'react-native'
 
-import startMainTabs from '../MainTabs/startMainTab'
+// import startMainTabs from '../MainTabs/startMainTab'
 import DefaultInput from '../../components/UI/DefaultInput/DefaultInput'
 import HeadingText from '../../components/UI/DefaultInput/DefaultInput'
 import MainText from "../../components/UI/MainText/MainText";
@@ -96,13 +97,13 @@ class Auth extends Component {
   }
 
 
-  loginHandler = () => {
+  authHandler = () => {
     const authData = {
       email: this.state.controls.email.value,
       password: this.state.controls.password.value
     };
-    this.props.onLogin(authData);
-    startMainTabs();
+    this.props.onTryAuth(authData, this.state.authMode);
+    // startMainTabs();
   };
 
 
@@ -150,12 +151,28 @@ class Auth extends Component {
       };
     });
   };
+
+
+
   
 
   render() {
 
   let headingText = null;
   let confirmPasswordControl = null;
+
+  let submiButton = (
+    <ButtonWithBackground
+      color="#29aaf4"
+      onPress={this.authHandler}
+      disabled={
+        !this.state.controls.confirmPassword.valid 
+        && this.state.authMode === "signup" 
+        || !this.state.controls.email.valid 
+        || !this.state.controls.password.valid
+      }
+      >Submit</ButtonWithBackground>
+  )
 
     if (this.state.viewMode === "portrait") {
       headingText = (
@@ -188,6 +205,9 @@ class Auth extends Component {
       );
     }
 
+  if(this.state.isLoading){
+    submiButton = <ActivityIndicator />
+  }
     return (
       <ImageBackground 
         source={backgroundImage}
@@ -268,20 +288,8 @@ class Auth extends Component {
 
         </View>
         </TouchableWithoutFeedback>
-        <ButtonWithBackground
-          color="#29aaf4"
-          onPress={this.loginHandler}
-          disabled={
-            !this.state.controls.confirmPassword.valid && this.state.authMode === "signup" ||
-            !this.state.controls.email.valid ||
-            !this.state.controls.password.valid
-          }
-          >Submit</ButtonWithBackground>
-        {/* <Button 
-          title={'Submit'}
-          onPress={this.loginHandler} /> */}
-      {/* </View>       */}
-
+        {submiButton}
+        
       </KeyboardAvoidingView>
       </ImageBackground>
     )
@@ -331,10 +339,16 @@ const styles = StyleSheet.create({
   }
 })
 
+const mapStateToProps = (state, ownProps) => {
+  return {
+    isLoading: state.ui.isLoading
+  }
+}
+
 const mapDispatchToProps = dispatch => {
   return {
-    onLogin: authData => dispatch(tryAuth(authData))
+    onTryAuth: (authData, authMode) => dispatch(tryAuth(authData, authMode))
   };
 };
 
-export default connect(null, mapDispatchToProps)(Auth);
+export default connect(mapStateToProps, mapDispatchToProps)(Auth);

@@ -5,7 +5,8 @@ export {
 }
 from "./places";
 export {
-  tryAuth
+  tryAuth,
+  authGetToken
 }
 from "./auth";
 export {
