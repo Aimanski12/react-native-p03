@@ -10,6 +10,7 @@ import {
 
 export const addPlace = (placeName, location, image) => {
   return dispatch => {
+    let authToken;
     dispatch(uiStartLoading());
 
     dispatch(authGetToken())
@@ -17,11 +18,15 @@ export const addPlace = (placeName, location, image) => {
         alert('No valid token found!');
       })
       .then((token)=>{
-        return   fetch("https://us-central1-rn-places-app.cloudfunctions.net/storeImage", {
+      authToken = token
+      return fetch("https://us-central1-rn-places-app.cloudfunctions.net/storeImage", {
             method: "POST",
             body: JSON.stringify({
               image: image.base64
-            })
+            }),
+            headers: {
+              Authorization: "Bearer " + authToken
+            }
           })
 
       })
@@ -38,21 +43,21 @@ export const addPlace = (placeName, location, image) => {
           location: location,
           image: parsedRes.imageUrl
         };
-        return fetch("https://rn-places-app.firebaseio.com/places.json", {
-          method: "POST",
-          body: JSON.stringify(placeData)
-        })
-      })
-      .then(res => res.json())
-      .then(parsedRes => {
-        console.log(parsedRes);
-        dispatch(uiStopLoading());
-      })
-      .catch(err => {
-        console.log(err);
-        alert("Something went wrong, please try again!");
-        dispatch(uiStopLoading());
-      })
+  return fetch("https://rn-places-app.firebaseio.com/places.json?auth=" + authToken, {
+    method: "POST",
+    body: JSON.stringify(placeData)
+  })
+    })
+    .then(res => res.json())
+    .then(parsedRes => {
+      console.log(parsedRes);
+      dispatch(uiStopLoading());
+    })
+    .catch(err => {
+      console.log(err);
+      alert("Something went wrong, please try again!");
+      dispatch(uiStopLoading());
+    })
   };
 };
 
@@ -106,6 +111,7 @@ export const deletePlace = (key) => {
         // remove the token locally
         dispatch(removePlace(key));
           // remove the data from the database
+          // append token in the request to check if token is valid
           return fetch("https://rn-places-app.firebaseio.com/places/" + key + ".json?auth=" + token, {
               method: "DELETE"
             })

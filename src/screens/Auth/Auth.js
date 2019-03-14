@@ -20,7 +20,7 @@ import MainText from "../../components/UI/MainText/MainText";
 import ButtonWithBackground from '../../components/UI/ButtonWithBackground/ButtonWithBackground'
 import backgroundImage from '../../assets/1.png'
 import validate from "../../utility/validation";
-import { tryAuth } from "../../store/actions/index";
+import { tryAuth, authAutoSignIn } from "../../store/actions/index";
 import { connect } from "react-redux";
 
 class Auth extends Component {
@@ -86,6 +86,10 @@ class Auth extends Component {
 
   componentWillUnmount() {
     Dimensions.removeEventListener("change", this.updateStyles);
+  }
+
+  componentDidMount() {
+    this.props.onAutoSignIn();
   }
 
   updateStyles = (dims) => {
@@ -347,7 +351,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onTryAuth: (authData, authMode) => dispatch(tryAuth(authData, authMode))
+    onTryAuth: (authData, authMode) => dispatch(tryAuth(authData, authMode)),
+    onAutoSignIn: () => dispatch(authAutoSignIn())
   };
 };
 

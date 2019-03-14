@@ -1,6 +1,8 @@
 import { TRY_AUTH, AUTH_SET_TOKEN } from './actionTypes';
 import {uiStartLoading, uiStopLoading} from './ui'
 
+import {AsyncStorage} from 'react-native'
+
 import startMainTabs from "../../screens/MainTabs/startMainTab";
 
 export const tryAuth = (authData, authMode) => {
@@ -36,12 +38,24 @@ export const tryAuth = (authData, authMode) => {
       if (!parsedRes.idToken) {
         alert('Authentication failed! Please try again!')
       } else {
-        dispatch(authSetToken(parsedRes.idToken))
+        dispatch(authStoreToken(parsedRes.idToken))
         startMainTabs()
       }
     })
   }
 };
+
+
+export const authStoreToken = token => {
+  return dispatch => {
+    // const now = new Date();
+    // const expiryDate = now.getTime() + expiresIn * 1000;
+    dispatch(authSetToken(token));
+    AsyncStorage.setItem("app:auth:token", token);
+    // AsyncStorage.setItem("app:auth:expiryDate", expiryDate.toString());
+    // AsyncStorage.setItem("app:auth:refreshToken", refreshToken);
+  };
+}
 
 
 
@@ -60,10 +74,19 @@ export const authGetToken = () => {
       const token = getState().auth.token;
       // if there is no token
       if (!token){
-        // then reject the action
+        AsyncStorage.getItem('app:auth:token')
+          .catch(err => reject())
+          .then(tokenFromStorage => {
+            if(!tokenFromStorage){
+              reject()
+              return
+            }
+            // console.log('token aqui', tokenFromStorage)
+            dispatch(authSetToken(tokenFromStorage));
+            resolve(tokenFromStorage)
+          })
         reject()
       } else {
-        // if there is, the we can resolve()
         resolve(token)
       }
     })
@@ -71,3 +94,15 @@ export const authGetToken = () => {
     return promise
   }
 }
+
+
+export const authAutoSignIn = () => {
+  return dispatch => {
+    dispatch(authGetToken())
+      .then(token => {
+        console.log('token aqui', token)
+        startMainTabs();
+      })
+      .catch(err => console.log("Failed to fetch token!"));
+  };
+};

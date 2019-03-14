@@ -6,7 +6,8 @@ export {
 from "./places";
 export {
   tryAuth,
-  authGetToken
+  authGetToken,
+  authAutoSignIn
 }
 from "./auth";
 export {
