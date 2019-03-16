@@ -1,12 +1,20 @@
 import {
   SET_PLACES,
-  REMOVE_PLACE
+  REMOVE_PLACE,
+  PLACE_ADDED,
+  START_ADD_PLACE
 } from './actionTypes';
 import {
   uiStartLoading,
   uiStopLoading,
   authGetToken
 } from './index';
+
+export const startAddPlace = () => {
+  return {
+    type: START_ADD_PLACE
+  }
+}
 
 export const addPlace = (placeName, location, image) => {
   return dispatch => {
@@ -41,7 +49,8 @@ export const addPlace = (placeName, location, image) => {
         const placeData = {
           name: placeName,
           location: location,
-          image: parsedRes.imageUrl
+          image: parsedRes.imageUrl,
+          imagePath: parsedRes.imagePath
         };
   return fetch("https://rn-places-app.firebaseio.com/places.json?auth=" + authToken, {
     method: "POST",
@@ -52,6 +61,7 @@ export const addPlace = (placeName, location, image) => {
     .then(parsedRes => {
       console.log(parsedRes);
       dispatch(uiStopLoading());
+      dispatch(placeAdded())
     })
     .catch(err => {
       console.log(err);
@@ -61,17 +71,35 @@ export const addPlace = (placeName, location, image) => {
   };
 };
 
+
+export const placeAdded = () => {
+  return {
+    type: PLACE_ADDED,
+
+  }
+}
+
+
+
+
 export const getPlaces = () => {
   return dispatch => {
     dispatch(authGetToken())
       .then(token => {
+        // console.log('token', token)
         return fetch("https://rn-places-app.firebaseio.com/places.json?auth=" + token)
       })
       .catch(()=>{
-        alert("No valid token found!")
+        // alert("No valid token found!")
+        // reject()
+        console.log('no token found')
+        // return
       })
-      .then(res => res.json())
+      .then(res => res.json()
+        // console.log('parsed responsed', res.json())
+      )
       .then(parsedRes => {
+          console.log('parsed response', parsedRes)
         const places = [];
         for (let key in parsedRes) {
           places.push({
@@ -85,8 +113,8 @@ export const getPlaces = () => {
         dispatch(setPlaces(places));
       })
       .catch(err => {
-        alert(`Something went wrong GET PLACES, sorry :/`);
-        console.log(err);
+        // alert(`Something went wrong GET PLACES, sorry :/`);
+        console.log('error', err);
       })
   };
 };

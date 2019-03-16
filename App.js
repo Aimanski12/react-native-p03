@@ -17,11 +17,11 @@ Navigation.registerComponent("awesome-places.FindPlaceScreen", () => FindPlaceSc
 
 Navigation.registerComponent("awesome-places.PlaceDetailScreen", () => PlaceDetailScreen, store, Provider)
 
-Navigation.registerComponent("awesome-places.SideDrawer", () => SideDrawer)
+Navigation.registerComponent("awesome-places.SideDrawer", () => SideDrawer, store, Provider)
 
 
 // Start a App
-Navigation.startSingleScreenApp({
+export default () => Navigation.startSingleScreenApp({
   screen: {
     screen: "awesome-places.AuthScreen",
     title: 'Login'

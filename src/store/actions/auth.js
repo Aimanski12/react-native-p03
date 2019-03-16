@@ -1,19 +1,23 @@
-import { TRY_AUTH, AUTH_SET_TOKEN } from './actionTypes';
+import { TRY_AUTH, AUTH_SET_TOKEN, AUTH_REMOVE_TOKEN } from './actionTypes';
 import {uiStartLoading, uiStopLoading} from './ui'
 
 import {AsyncStorage} from 'react-native'
 
 import startMainTabs from "../../screens/MainTabs/startMainTab";
 
+import App from "../../../App";
+
+const API_KEY = "AIzaSyAFX7BitaqhoYAj58MesJIJzWtBTRW1XPY"
+
+
 export const tryAuth = (authData, authMode) => {
   return dispatch => {
     dispatch(uiStartLoading())
 
-  const apiKey = "AIzaSyAFX7BitaqhoYAj58MesJIJzWtBTRW1XPY"
-  let url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=' + apiKey
+  let url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=' + API_KEY
 
   if (authMode === 'signup'){
-    url = "https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=" + apiKey
+    url = "https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=" + API_KEY
   }
     fetch(url, {
       method: "POST",
@@ -38,7 +42,12 @@ export const tryAuth = (authData, authMode) => {
       if (!parsedRes.idToken) {
         alert('Authentication failed! Please try again!')
       } else {
-        dispatch(authStoreToken(parsedRes.idToken))
+      dispatch(
+        authStoreToken(
+          parsedRes.idToken, 
+          parsedRes.expiresIn, 
+          parsedRes.refreshToken)
+      )
         startMainTabs()
       }
     })
@@ -46,63 +55,213 @@ export const tryAuth = (authData, authMode) => {
 };
 
 
-export const authStoreToken = token => {
+export const authStoreToken = (token, expiresIn, refreshToken) => {
   return dispatch => {
-    // const now = new Date();
-    // const expiryDate = now.getTime() + expiresIn * 1000;
-    dispatch(authSetToken(token));
-    AsyncStorage.setItem("app:auth:token", token);
-    // AsyncStorage.setItem("app:auth:expiryDate", expiryDate.toString());
-    // AsyncStorage.setItem("app:auth:refreshToken", refreshToken);
+    const now = new Date();
+    const expiryDate = now.getTime() + 5 * 1000;
+    dispatch(authSetToken(token, expiryDate));
+    AsyncStorage.setItem("ap:auth:token", token);
+    AsyncStorage.setItem("ap:auth:expiryDate", expiryDate.toString());
+    AsyncStorage.setItem("ap:auth:refreshToken", refreshToken);
   };
 }
 
 
 
-export const authSetToken = token => {
+export const authSetToken = (token, expiryDate) => {
   return {
     type: AUTH_SET_TOKEN,
-    token: token
+    token: token,
+    expiryDate: expiryDate
   }
 };
 
+// export const authGetToken = () => {
+//   return (dispatch, getState) => {
+//     // use promise to resolve/reject actions is results are taken
+//     const promise = new Promise((resolve, reject) => {
+//       // utilize getState to check if there is an authToken
+//       const token = getState().auth.token;
+//       const expiryDate = getState().auth.expiryDate
+//       // console.log('token from the state', token)
+//       // if there is no token
+//       if (!token || new Date(expiryDate) <= new Date()){
+//         let fetchedToken;
+//         AsyncStorage.getItem('app:auth:token')
+//           // .catch(err => reject())
+//           .then(tokenFromStorage => {
+//             // console.log('token from the storage', tokenFromStorage)
+//             fetchedToken = tokenFromStorage 
+//             if(!tokenFromStorage){
+//               reject()
+//               return
+//             }
+//             return AsyncStorage.getItem('app:auth:expiryDate')
+//           })
+//           .then(expiryDate =>{
+//             const parsedExpiryDate = new Date(parseInt(expiryDate))
+//             const now = new Date();
+//             if(parsedExpiryDate > now){
+//               dispatch(authSetToken(fetchedToken))
+//               resolve(fetchedToken)
+//             } else {
+//               reject()
+//             }
+//           })
+//           .catch(err => reject())
+//         reject()
+//       } else {
+//         resolve(token)
+//       }
+//     })
+
+//     return promise
+//       .catch(err => {
+//       return AsyncStorage.getItem("app.auth.refreshToken")
+//         .then(refreshToken => {
+//           return fetch("https://securetoken.googleapis.com/v1/token?key=" + API_KEY, {
+//             method: "POST",
+//             headers: {
+//               "Context": "application/x-www-form-urlencoded"
+//             },
+//             body: "grant_type=refresh_token&refresh_Token=" + refreshToken 
+//           }) 
+//         }) 
+//         .then(res => res.json())
+//         .then(parsedRes => {
+//           if(parsedRes.id_token){
+//             console.log('refreshing the token worked')
+//             dispatch(
+//               authStoreToken(
+//                 parsed.id_token, 
+//                 parsedRes.expires_in, 
+//                 parsedRes.refresh_Token)
+//               )
+//             return parsedRes.id_token
+//           } else {
+//             dispatch(authClearStorage())
+//           }
+//         })
+//     })
+//     .then(token =>{
+//       if(!token){
+//         throw(new Error())
+//       } else {
+//         return token
+//       }
+//     })
+//   }
+// }
+
+
 export const authGetToken = () => {
   return (dispatch, getState) => {
-    // use promise to resolve/reject actions is results are taken
     const promise = new Promise((resolve, reject) => {
-      // utilize getState to check if there is an authToken
+      
       const token = getState().auth.token;
-      // if there is no token
-      if (!token){
-        AsyncStorage.getItem('app:auth:token')
+      const expiryDate = getState().auth.expiryDate;
+      if (!token || new Date(expiryDate) <= new Date()) {
+        let fetchedToken;
+        AsyncStorage.getItem("ap:auth:token")
           .catch(err => reject())
           .then(tokenFromStorage => {
-            if(!tokenFromStorage){
-              reject()
-              return
+            fetchedToken = tokenFromStorage;
+            if (!tokenFromStorage) {
+              reject();
+              return;
             }
-            // console.log('token aqui', tokenFromStorage)
-            dispatch(authSetToken(tokenFromStorage));
-            resolve(tokenFromStorage)
+            return AsyncStorage.getItem("ap:auth:expiryDate");
           })
-        reject()
+          .then(expiryDate => {
+            const parsedExpiryDate = new Date(parseInt(expiryDate));
+            const now = new Date();
+            if (parsedExpiryDate > now) {
+              dispatch(authSetToken(fetchedToken));
+              resolve(fetchedToken);
+            } else {
+              reject();
+            }
+          })
+          .catch(err => reject());
       } else {
-        resolve(token)
+        resolve(token);
       }
-    })
-    // return the promise
+    });
     return promise
-  }
-}
-
+      .catch(err => {
+        return AsyncStorage.getItem("ap:auth:refreshToken")
+          .then(refreshToken => {
+            
+          return fetch(
+            "https://securetoken.googleapis.com/v1/token?key=" + API_KEY, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              body: "grant_type=refresh_token&refresh_token=" + refreshToken
+            }
+            );
+          })
+          .then(res => res.json()
+          )
+          .then(parsedRes => {
+            // console.log('PARSED', parsedRes)
+            if (parsedRes.id_token) {
+              console.log("Refresh token worked!");
+              dispatch(
+                authStoreToken(
+                  parsedRes.id_token,
+                  parsedRes.expires_in,
+                  parsedRes.refresh_token
+                )
+              );
+              return parsedRes.id_token;
+            } else {
+              dispatch(authClearStorage());
+            }
+          });
+      })
+      .then(token => {
+        if (!token) {
+          throw new Error();
+        } else {
+          return token;
+        }
+      });
+  };
+};
 
 export const authAutoSignIn = () => {
   return dispatch => {
     dispatch(authGetToken())
       .then(token => {
-        console.log('token aqui', token)
+        // console.log('token from auto sign', token)
         startMainTabs();
       })
-      .catch(err => console.log("Failed to fetch token!"));
+      .catch(err => console.log("Failed to fetch token!", err));
+  };
+};
+
+export const authClearStorage = () => {
+  return dispatch => {
+    AsyncStorage.removeItem("app:auth:token");
+    AsyncStorage.removeItem("app:auth:expiryDate");
+    // AsyncStorage.removeItem("app:auth:refreshToken");
+    return AsyncStorage.removeItem("app:auth:refreshToken");
+  };
+};
+
+export const authLogout = () => {
+  return dispatch => {
+    dispatch(authClearStorage()).then(() => {
+      App();
+    });
+    dispatch(authRemoveToken());
+  };
+};
+
+export const authRemoveToken = () => {
+  return {
+    type: AUTH_REMOVE_TOKEN
   };
 };

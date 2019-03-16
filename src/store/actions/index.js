@@ -1,13 +1,16 @@
 export {
   addPlace,
   deletePlace,
-  getPlaces
+  getPlaces,
+  startAddPlace,
+  placeAdded
 }
 from "./places";
 export {
   tryAuth,
   authGetToken,
-  authAutoSignIn
+  authAutoSignIn,
+  authLogout
 }
 from "./auth";
 export {
