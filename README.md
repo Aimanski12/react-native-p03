@@ -7,11 +7,11 @@ Please consider following the author, [Aimanski12](https://github.com/Aimanski12
 ## Installation
 
 Create a new application with
-
-cd to your project-name and install the following external libraries to your project;
 ```bash
 $ react-native init project-name
 ```
+
+cd to your project-name and install the following external libraries to your project;
 
 ```bash
 $ npm install react-native-image-picker
@@ -35,7 +35,7 @@ $ react-native run-android
 ## Contributing
 
 If you find bugs with this project, pull requests are always welcome. You can [create an issue here](https://github.com/Aimanski12/react-native-p03/issues/new).
-Your :start: are also greatly appreciated.
+Your :star: are also greatly appreciated.
 
 ## Author
 
