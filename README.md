@@ -20,7 +20,7 @@ $ npm install react-redux
 $ npm install react-native-vector-icons
 
 ```
-After installation, follow visit each library documentation and go to the installation set-up for the build configuration of your project. When everything is complete you run the following code to run the application;
+After installation, visit each library's documentation and go to the installation set-up for the build configuration of your project. After completing your build setup enter following code in your terminal to run the application;
 
 ```bash
 $ react-native run-ios
