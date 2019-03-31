@@ -1,34 +1,47 @@
-# React Native Project 03
+# Photo Sharing App
 
-An React Native application to level up my skills.
+> An app built with [React Native](https://facebook.github.io/react-native/) that allows the user to capture photos by their phone, add their location and save the image to the [Firebase](https://firebase.google.com/)
 
-# The App looks like this;
+Please consider following the author, [Aimanski12](https://github.com/Aimanski12), and consider starring this project to show your :heart: and :thumbsup:.
 
-![Screenshot](src/assets/screen.png)
+## Installation
 
-# Basic set up and installation
+Create a new application with
 
-* [Getting Started](https://facebook.github.io/react-native/docs/getting-started)
+cd to your project-name and install the following external libraries to your project;
+```bash
+$ react-native init project-name
+```
 
-# Libraries used
+```bash
+$ npm install react-native-image-picker
+$ npm install react-native-navigation
+$ npm install react-redux
+$ npm install react-native-vector-icons
 
-* [React Native](https://facebook.github.io/react-native/)
-* [React Native Navigation](https://wix.github.io/react-native-navigation/#/)
-* [React Native Dimensions](https://facebook.github.io/react-native/docs/height-and-width.html)
-* [Flexbox in React Native](https://facebook.github.io/react-native/docs/flexbox.html)
-* [React Native Animations](https://facebook.github.io/react-native/docs/animations.html)
-* [React Redux](https://react-redux.js.org/)
-* [Styling React Native](https://github.com/vhpoet/react-native-styling-cheat-sheet)
+```
+After installation, follow visit each library documentation and go to the installation set-up for the build configuration of your project. When everything is complete you run the following code to run the application;
 
+```bash
+$ react-native run-ios
+```
 
-# What I Learned
+or
 
-* Setup android SDK in local enviroment and interact with simulators.
-* Create a good development setup for React Native.
-* Create a basic React Native app.
-* How React Native works and runs.
-* How to build a reusable React Native components.
-* Interact with the user using TextInputs and Validations.
-* Integrate Redux in the application.
-* Create a dynamic UI by allowing user to upload images to the server.<br>
+```bash
+$ react-native run-android
+```
 
+## Contributing
+
+If you find bugs with this project, pull requests are always welcome. You can [create an issue here](https://github.com/Aimanski12/react-native-p03/issues/new).
+Your :start: are also greatly appreciated.
+
+## Author
+
+[Aimanski](https://github.com/Aimanski12)
+
+## License 
+
+Copyright © 2019, [Aimanski12](https://github.com/Aimanski12).
+Released under the [MIT License](LICENSE).

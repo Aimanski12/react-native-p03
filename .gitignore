@@ -64,3 +64,11 @@ __tests__/
 babel.config.js
 index.android.js
 package-lock.json
+
+android/
+icons/
+ios/
+functions/
+.gitignore
+.firebaserc
+.firebase.json
