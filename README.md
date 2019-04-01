@@ -4,6 +4,10 @@
 
 Please consider following the author, [Aimanski12](https://github.com/Aimanski12), and consider starring this project to show your :heart: and :thumbsup:.
 
+<div align="center">
+<a href="https://user-images.githubusercontent.com/32781697/55290400-856a9580-5398-11e9-8ebb-785659c2813f.png"><img src="https://user-images.githubusercontent.com/32781697/55290400-856a9580-5398-11e9-8ebb-785659c2813f.png" title="Project Clip"/></a>
+</div>
+
 ## Installation
 
 Create a new application with
