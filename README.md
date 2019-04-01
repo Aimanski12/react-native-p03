@@ -41,6 +41,8 @@ $ react-native run-android
 If you find bugs with this project, pull requests are always welcome. You can [create an issue here](https://github.com/Aimanski12/react-native-p03/issues/new).
 Your :star: are also greatly appreciated.
 
+[View other projects](https://github.com/Aimanski12/MyReactNativeProjects)
+
 ## Author
 
 [Aimanski](https://github.com/Aimanski12)
