@@ -2,22 +2,21 @@ import { TRY_AUTH, AUTH_SET_TOKEN, AUTH_REMOVE_TOKEN } from './actionTypes';
 import {uiStartLoading, uiStopLoading} from './ui'
 
 import {AsyncStorage} from 'react-native'
-
 import startMainTabs from "../../screens/MainTabs/startMainTab";
-
 import App from "../../../App";
+import {API_TOKEN, URL_PASSWORD_VERIFY, URL_REFRESH, URL_SIGNUP} from '../../../apiConfig'
 
-const API_KEY = "AIzaSyAFX7BitaqhoYAj58MesJIJzWtBTRW1XPY"
 
+const API_KEY = API_TOKEN
 
 export const tryAuth = (authData, authMode) => {
   return dispatch => {
     dispatch(uiStartLoading())
 
-  let url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=' + API_KEY
+  let url = URL_PASSWORD_VERIFY + API_KEY
 
   if (authMode === 'signup'){
-    url = "https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=" + API_KEY
+    url = URL_SIGNUP + API_KEY
   }
     fetch(url, {
       method: "POST",
@@ -54,7 +53,6 @@ export const tryAuth = (authData, authMode) => {
   }
 };
 
-
 export const authStoreToken = (token, expiresIn, refreshToken) => {
   return dispatch => {
     const now = new Date();
@@ -66,8 +64,6 @@ export const authStoreToken = (token, expiresIn, refreshToken) => {
   };
 }
 
-
-
 export const authSetToken = (token, expiryDate) => {
   return {
     type: AUTH_SET_TOKEN,
@@ -75,84 +71,6 @@ export const authSetToken = (token, expiryDate) => {
     expiryDate: expiryDate
   }
 };
-
-// export const authGetToken = () => {
-//   return (dispatch, getState) => {
-//     // use promise to resolve/reject actions is results are taken
-//     const promise = new Promise((resolve, reject) => {
-//       // utilize getState to check if there is an authToken
-//       const token = getState().auth.token;
-//       const expiryDate = getState().auth.expiryDate
-//       // console.log('token from the state', token)
-//       // if there is no token
-//       if (!token || new Date(expiryDate) <= new Date()){
-//         let fetchedToken;
-//         AsyncStorage.getItem('app:auth:token')
-//           // .catch(err => reject())
-//           .then(tokenFromStorage => {
-//             // console.log('token from the storage', tokenFromStorage)
-//             fetchedToken = tokenFromStorage 
-//             if(!tokenFromStorage){
-//               reject()
-//               return
-//             }
-//             return AsyncStorage.getItem('app:auth:expiryDate')
-//           })
-//           .then(expiryDate =>{
-//             const parsedExpiryDate = new Date(parseInt(expiryDate))
-//             const now = new Date();
-//             if(parsedExpiryDate > now){
-//               dispatch(authSetToken(fetchedToken))
-//               resolve(fetchedToken)
-//             } else {
-//               reject()
-//             }
-//           })
-//           .catch(err => reject())
-//         reject()
-//       } else {
-//         resolve(token)
-//       }
-//     })
-
-//     return promise
-//       .catch(err => {
-//       return AsyncStorage.getItem("app.auth.refreshToken")
-//         .then(refreshToken => {
-//           return fetch("https://securetoken.googleapis.com/v1/token?key=" + API_KEY, {
-//             method: "POST",
-//             headers: {
-//               "Context": "application/x-www-form-urlencoded"
-//             },
-//             body: "grant_type=refresh_token&refresh_Token=" + refreshToken 
-//           }) 
-//         }) 
-//         .then(res => res.json())
-//         .then(parsedRes => {
-//           if(parsedRes.id_token){
-//             console.log('refreshing the token worked')
-//             dispatch(
-//               authStoreToken(
-//                 parsed.id_token, 
-//                 parsedRes.expires_in, 
-//                 parsedRes.refresh_Token)
-//               )
-//             return parsedRes.id_token
-//           } else {
-//             dispatch(authClearStorage())
-//           }
-//         })
-//     })
-//     .then(token =>{
-//       if(!token){
-//         throw(new Error())
-//       } else {
-//         return token
-//       }
-//     })
-//   }
-// }
-
 
 export const authGetToken = () => {
   return (dispatch, getState) => {
@@ -193,7 +111,7 @@ export const authGetToken = () => {
           .then(refreshToken => {
             
           return fetch(
-            "https://securetoken.googleapis.com/v1/token?key=" + API_KEY, {
+            URL_REFRESH + API_KEY, {
               method: "POST",
               headers: {
                 "Content-Type": "application/x-www-form-urlencoded"

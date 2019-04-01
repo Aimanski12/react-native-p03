@@ -10,6 +10,8 @@ import {
   authGetToken
 } from './index';
 
+import {CLOUD_FUNC, URL_DATABASE, URL_DATABASE_EDIT} from '../../../apiConfig'
+
 export const startAddPlace = () => {
   return {
     type: START_ADD_PLACE
@@ -27,7 +29,7 @@ export const addPlace = (placeName, location, image) => {
       })
       .then((token)=>{
       authToken = token
-      return fetch("https://us-central1-rn-places-app.cloudfunctions.net/storeImage", {
+      return fetch(CLOUD_FUNC, {
             method: "POST",
             body: JSON.stringify({
               image: image.base64
@@ -52,7 +54,7 @@ export const addPlace = (placeName, location, image) => {
           image: parsedRes.imageUrl,
           imagePath: parsedRes.imagePath
         };
-  return fetch("https://rn-places-app.firebaseio.com/places.json?auth=" + authToken, {
+  return fetch(URL_DATABASE + authToken, {
     method: "POST",
     body: JSON.stringify(placeData)
   })
@@ -87,7 +89,7 @@ export const getPlaces = () => {
     dispatch(authGetToken())
       .then(token => {
         // console.log('token', token)
-        return fetch("https://rn-places-app.firebaseio.com/places.json?auth=" + token)
+        return fetch(URL_DATABASE + token)
       })
       .catch(()=>{
         // alert("No valid token found!")
@@ -140,7 +142,7 @@ export const deletePlace = (key) => {
         dispatch(removePlace(key));
           // remove the data from the database
           // append token in the request to check if token is valid
-          return fetch("https://rn-places-app.firebaseio.com/places/" + key + ".json?auth=" + token, {
+          return fetch(URL_DATABASE_EDIT + key + ".json?auth=" + token, {
               method: "DELETE"
             })
       })
